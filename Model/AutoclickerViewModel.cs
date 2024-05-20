@@ -5,29 +5,31 @@ namespace autoclicker.Model;
 
 public class AutoclickerViewModel : INotifyPropertyChanged
 {
-    
-    public static AutoclickerViewModel Instance { get; } = new();
-
-    private AutoclickerViewModel() { }
-    
-    // Interval 
-    private int _milliseconds = 10;
-    private int _seconds;
-    private int _minutes;
-    private int _hours;
-    
     // Interval as clicks per unit of time
     private int _cpm;
     private int _cps;
+    private int _hours;
+
+    private bool _isRunning;
+
+    // Interval 
+    private int _milliseconds = 10;
+    private int _minutes;
 
     private int _repetitions;
     private int _repetitionsDone;
-    
-    private bool _isRunning;
-    
+    private int _seconds;
+
+    private AutoclickerViewModel()
+    {
+    }
+
+    public static AutoclickerViewModel Instance { get; } = new();
+
     #region Properties
 
     #region Running state
+
     public bool IsRunning
     {
         get => _isRunning;
@@ -38,12 +40,13 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(IsNotRunning));
         }
     }
-    
+
     public bool IsNotRunning => !IsRunning;
+
     #endregion
-    
+
     public MouseButtons SelectedMouseButton { get; set; }
-    
+
     public int Milliseconds
     {
         get => _milliseconds;
@@ -53,7 +56,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(Milliseconds));
         }
     }
-    
+
     public int Seconds
     {
         get => _seconds;
@@ -63,7 +66,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(Seconds));
         }
     }
-    
+
     public int Minutes
     {
         get => _minutes;
@@ -73,7 +76,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(Minutes));
         }
     }
-    
+
     public int Hours
     {
         get => _hours;
@@ -83,7 +86,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(Hours));
         }
     }
-    
+
     public int Cpm
     {
         get => _cpm;
@@ -101,7 +104,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     public bool CpmActive => _cpm != 0;
     public bool CpmInactive => !CpmActive;
     public string CpmText => CpmActive ? "CPM (120000 MAX)" : "SET CPM";
-    
+
 
     public int Cps
     {
@@ -116,14 +119,16 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(IsIntervalEnabled));
         }
     }
+
     public bool CpsActive => _cps != 0;
     public bool CpsInactive => !CpsActive;
-    
+
     public string CpsText => CpsActive ? "CPS (2000 MAX)" : "SET CPS";
-    
+
     public bool IsIntervalEnabled => !(CpmActive || CpsActive);
 
     #region Repetitions
+
     public int Repetitions
     {
         get => _repetitions;
@@ -135,11 +140,11 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(IsRepetitionsDisabled));
         }
     }
-    
+
     public bool IsRepetitionsDisabled => _repetitions == 0;
 
     public string RepetitionText => _repetitions == 0 ? "RUNNING UNTIL STOPPED" : "REPETITIONS";
-    
+
     public int RepetitionsDone
     {
         get => _repetitionsDone;
@@ -151,68 +156,83 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     }
 
     public int RepetitionsPercentageDone => _repetitions == 0 ? 0 : _repetitionsDone * 100 / _repetitions;
+
     #endregion
 
     #region Property Changed
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    internal void NotifyPropertyChanged(string propertyName) =>
+    internal void NotifyPropertyChanged(string propertyName)
+    {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
     #endregion
-    
+
     #endregion
-    
+
     #region Autoclicker
+
     private CancellationTokenSource _cancellationTokenClicker = new();
-    
+
     public void StartClicker()
     {
         var sleepTime = new TimeSpan(0, Hours, Minutes, Seconds, Milliseconds);
-        if (CpsActive)
-        {
-            sleepTime = new TimeSpan(0, 0, 0, 0, 0, 1000000/Cps);
-        }
-        else if (CpmActive)
-        {
-            sleepTime = new TimeSpan(0, 0, 0, 0, 0, 60*1000000/Cpm);
-        }
+        if (CpsActive) sleepTime = new TimeSpan(0, 0, 0, 0, 0, 1000000 / Cps);
+        else if (CpmActive) sleepTime = new TimeSpan(0, 0, 0, 0, 0, 60 * 1000000 / Cpm);
         
+        // Safeguard to not allow 0 Milliseconds 
+        if (sleepTime == TimeSpan.Zero) sleepTime = new TimeSpan(0, 0, 0, 0, 500);
+
         IsRunning = true;
         _cancellationTokenClicker = new CancellationTokenSource();
-        
+
         Task.Run(() =>
         {
             if (_repetitions == 0)
-            {
                 while (!_cancellationTokenClicker.Token.IsCancellationRequested)
                 {
+                    var clickStartTime = DateTime.UtcNow;
+
                     PressMouseButton(SelectedMouseButton);
-                    RepetitionsDone++;
+                    Interlocked.Increment(ref _repetitionsDone);
                     NotifyPropertyChanged(nameof(RepetitionsPercentageDone));
-                    Thread.Sleep(sleepTime);
+
+                    var elapsedTime = DateTime.UtcNow - clickStartTime;
+
+                    var remainingTime = sleepTime - elapsedTime;
+
+                    Thread.Sleep(remainingTime);
                 }
-            }
             else
-            {
                 while (!_cancellationTokenClicker.Token.IsCancellationRequested && RepetitionsDone < _repetitions)
                 {
+                    var clickStartTime = DateTime.UtcNow;
+
+
                     PressMouseButton(SelectedMouseButton);
-                    RepetitionsDone++;
+                    Interlocked.Increment(ref _repetitionsDone);
                     NotifyPropertyChanged(nameof(RepetitionsPercentageDone));
-                    Thread.Sleep(sleepTime);
+
+                    var elapsedTime = DateTime.UtcNow - clickStartTime;
+
+                    var remainingTime = sleepTime - elapsedTime;
+
+                    Thread.Sleep(remainingTime);
                 }
-            }
 
             IsRunning = false;
             RepetitionsDone = 0;
         }, _cancellationTokenClicker.Token);
     }
-    
+
     public void StopClicker()
     {
         _cancellationTokenClicker.Cancel();
         IsRunning = false;
         RepetitionsDone = 0;
     }
+
     #endregion
 }
