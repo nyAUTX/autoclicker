@@ -10,10 +10,15 @@ public class AutoclickerViewModel : INotifyPropertyChanged
 
     private AutoclickerViewModel() { }
     
+    // Interval 
     private int _milliseconds = 10;
     private int _seconds;
     private int _minutes;
     private int _hours;
+    
+    // Interval as clicks per unit of time
+    private int _cpm;
+    private int _cps;
 
     private int _repetitions;
     private int _repetitionsDone;
@@ -22,6 +27,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     
     #region Properties
 
+    #region Running state
     public bool IsRunning
     {
         get => _isRunning;
@@ -34,6 +40,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     }
     
     public bool IsNotRunning => !IsRunning;
+    #endregion
     
     public MouseButtons SelectedMouseButton { get; set; }
     
@@ -42,14 +49,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         get => _milliseconds;
         set
         {
-            if (value >= 1000)
-            {
-                Hours = 0;
-                Minutes = 0;
-                Seconds = value / 1000;
-                _milliseconds = value % 1000;
-            }
-            else _milliseconds = value;
+            _milliseconds = value;
             NotifyPropertyChanged(nameof(Milliseconds));
         }
     }
@@ -59,13 +59,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         get => _seconds;
         set
         {
-            if(value >= 60)
-            {
-                Hours = 0;
-                Minutes = value / 60;
-                _seconds = value % 60;
-            }
-            else _seconds = value;
+            _seconds = value;
             NotifyPropertyChanged(nameof(Seconds));
         }
     }
@@ -75,12 +69,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         get => _minutes;
         set
         {
-            if (value >= 60)
-            {
-                Hours = value / 60;
-                _minutes = value % 60;
-            }
-            else _minutes = value;
+            _minutes = value;
             NotifyPropertyChanged(nameof(Minutes));
         }
     }
@@ -95,6 +84,46 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         }
     }
     
+    public int Cpm
+    {
+        get => _cpm;
+        set
+        {
+            _cpm = value;
+            NotifyPropertyChanged(nameof(Cpm));
+            NotifyPropertyChanged(nameof(CpmActive));
+            NotifyPropertyChanged(nameof(CpmInactive));
+            NotifyPropertyChanged(nameof(CpmText));
+            NotifyPropertyChanged(nameof(IsIntervalEnabled));
+        }
+    }
+
+    public bool CpmActive => _cpm != 0;
+    public bool CpmInactive => !CpmActive;
+    public string CpmText => CpmActive ? "CPM (120000 MAX)" : "SET CPM";
+    
+
+    public int Cps
+    {
+        get => _cps;
+        set
+        {
+            _cps = value;
+            NotifyPropertyChanged(nameof(Cps));
+            NotifyPropertyChanged(nameof(CpsActive));
+            NotifyPropertyChanged(nameof(CpsInactive));
+            NotifyPropertyChanged(nameof(CpsText));
+            NotifyPropertyChanged(nameof(IsIntervalEnabled));
+        }
+    }
+    public bool CpsActive => _cps != 0;
+    public bool CpsInactive => !CpsActive;
+    
+    public string CpsText => CpsActive ? "CPS (2000 MAX)" : "SET CPS";
+    
+    public bool IsIntervalEnabled => !(CpmActive || CpsActive);
+
+    #region Repetitions
     public int Repetitions
     {
         get => _repetitions;
@@ -110,14 +139,27 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     public bool IsRepetitionsDisabled => _repetitions == 0;
 
     public string RepetitionText => _repetitions == 0 ? "RUNNING UNTIL STOPPED" : "REPETITIONS";
+    
+    public int RepetitionsDone
+    {
+        get => _repetitionsDone;
+        set
+        {
+            _repetitionsDone = value;
+            NotifyPropertyChanged(nameof(RepetitionsDone));
+        }
+    }
 
     public int RepetitionsPercentageDone => _repetitions == 0 ? 0 : _repetitionsDone * 100 / _repetitions;
+    #endregion
 
-    // Property Changed Event Handler
+    #region Property Changed
     public event PropertyChangedEventHandler? PropertyChanged;
 
     internal void NotifyPropertyChanged(string propertyName) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    #endregion
+    
     #endregion
     
     #region Autoclicker
@@ -125,10 +167,18 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     
     public void StartClicker()
     {
+        var sleepTime = new TimeSpan(0, Hours, Minutes, Seconds, Milliseconds);
+        if (CpsActive)
+        {
+            sleepTime = new TimeSpan(0, 0, 0, 0, 0, 1000000/Cps);
+        }
+        else if (CpmActive)
+        {
+            sleepTime = new TimeSpan(0, 0, 0, 0, 0, 60*1000000/Cpm);
+        }
+        
         IsRunning = true;
         _cancellationTokenClicker = new CancellationTokenSource();
-        
-        var sleepTime = (Hours * 3600 + Minutes * 60 + Seconds) * 1000 + Milliseconds;
         
         Task.Run(() =>
         {
@@ -137,24 +187,24 @@ public class AutoclickerViewModel : INotifyPropertyChanged
                 while (!_cancellationTokenClicker.Token.IsCancellationRequested)
                 {
                     PressMouseButton(SelectedMouseButton);
-                    _repetitionsDone++;
+                    RepetitionsDone++;
                     NotifyPropertyChanged(nameof(RepetitionsPercentageDone));
                     Thread.Sleep(sleepTime);
                 }
             }
             else
             {
-                while (!_cancellationTokenClicker.Token.IsCancellationRequested && _repetitionsDone < _repetitions)
+                while (!_cancellationTokenClicker.Token.IsCancellationRequested && RepetitionsDone < _repetitions)
                 {
                     PressMouseButton(SelectedMouseButton);
-                    _repetitionsDone++;
+                    RepetitionsDone++;
                     NotifyPropertyChanged(nameof(RepetitionsPercentageDone));
                     Thread.Sleep(sleepTime);
                 }
             }
 
             IsRunning = false;
-            _repetitionsDone = 0;
+            RepetitionsDone = 0;
         }, _cancellationTokenClicker.Token);
     }
     
@@ -162,7 +212,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     {
         _cancellationTokenClicker.Cancel();
         IsRunning = false;
-        _repetitionsDone = 0;
+        RepetitionsDone = 0;
     }
     #endregion
 }

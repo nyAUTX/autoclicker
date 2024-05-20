@@ -3,16 +3,10 @@ using System.Windows.Data;
 
 namespace autoclicker.Converters;
 
-public class ZeroToEmptyStringConverter : IValueConverter
+public class NumberConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        // Convert zero to an empty string
-        if (value is int intValue && intValue == 0)
-        {
-            return string.Empty;
-        }
-
         // If not zero, return the original value
         return value!;
     }
@@ -23,6 +17,6 @@ public class ZeroToEmptyStringConverter : IValueConverter
         {
             value = "0";
         }
-        return value!;
+        return long.Parse((string)value) > int.MaxValue ? int.MaxValue : value!;
     }
 }

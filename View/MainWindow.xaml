@@ -11,100 +11,165 @@
         mc:Ignorable="d"
         DataContext="{x:Static model:AutoclickerViewModel.Instance}"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="MainWindow" Height="450" Width="550">
-    
+        Title="MainWindow" Height="450" Width="575">
+
 
     <Window.Resources>
-        <converters:ZeroToEmptyStringConverter x:Key="ZeroToEmptyStringConverter" />
-        <converters:ZeroToZeroConverter x:Key="ZeroToZeroConverter" />
+        <converters:NumberToBlankConverter x:Key="NumberToBlankConverter" />
+        <converters:NumberConverter x:Key="NumberConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <converters:CpmConverter x:Key="CpmConverter" />
+        <converters:CpsConverter x:Key="CpsConverter" />
     </Window.Resources>
 
     <DockPanel Margin="10">
-        
+
         <!-- region CLICK INTERVAL -->
         <GroupBox DockPanel.Dock="Top"
                   Margin="0 0 0 10"
                   Style="{StaticResource MaterialDesignCardGroupBox}"
                   Header="CLICK INTERVAL">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox
-                    VerticalAlignment="Center"
-                    Width="100"
-                    Padding="4 4 7 4"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource ZeroToEmptyStringConverter}}"
-                    PreviewTextInput="PreviewNumericInput"
-                    DataObject.Pasting="PastingNumericInput">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="100"
+                        MaxLength="8"
+                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                        IsEnabled="{Binding IsIntervalEnabled}"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource NumberToBlankConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
 
-                    <materialDesign:HintAssist.Hint>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Text="HOURS" />
-                        </StackPanel>
-                    </materialDesign:HintAssist.Hint>
-                </TextBox>
-                <TextBox
-                    VerticalAlignment="Center"
-                    Width="125"
-                    Padding="4 4 7 4"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource ZeroToEmptyStringConverter}}"
-                    PreviewTextInput="PreviewNumericInput"
-                    DataObject.Pasting="PastingNumericInput">
-                    <materialDesign:HintAssist.Hint>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Text="MINUTES" />
-                        </StackPanel>
-                    </materialDesign:HintAssist.Hint>
-                </TextBox>
-                <TextBox
-                    VerticalAlignment="Center"
-                    Width="125"
-                    Padding="4 4 7 4"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource ZeroToEmptyStringConverter}}"
-                    PreviewTextInput="PreviewNumericInput"
-                    DataObject.Pasting="PastingNumericInput">
-                    <materialDesign:HintAssist.Hint>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Text="SECONDS" />
-                        </StackPanel>
-                    </materialDesign:HintAssist.Hint>
-                </TextBox>
-                <TextBox
-                    VerticalAlignment="Center"
-                    Width="150"
-                    Padding="4 4 7 4"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Milliseconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='', Converter={StaticResource ZeroToZeroConverter}}"
-                    PreviewTextInput="PreviewNumericInput"
-                    DataObject.Pasting="PastingNumericInput">
-                    <materialDesign:HintAssist.Hint>
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Text="MILLISECONDS" />
-                        </StackPanel>
-                    </materialDesign:HintAssist.Hint>
-                </TextBox>
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="HOURS" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="125"
+                        MaxLength="10"
+                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                        IsEnabled="{Binding IsIntervalEnabled}"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource NumberToBlankConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="MINUTES" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="125"
+                        MaxLength="10"
+                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                        IsEnabled="{Binding IsIntervalEnabled}"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource NumberToBlankConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="SECONDS" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="150"
+                        MaxLength="10"
+                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                        IsEnabled="{Binding IsIntervalEnabled}"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Milliseconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='', Converter={StaticResource NumberConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="MILLISECONDS" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0 ">
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="150"
+                        IsEnabled="{Binding CpsInactive}"
+                        Margin="0 0 50 0"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Cpm, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource CpmConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
+
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Margin="0 0 5 0"
+                                    Kind="ClockOutline" />
+                                <TextBlock
+                                    Text="{Binding CpmText}" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                        VerticalAlignment="Center"
+                        Width="150"
+                        IsEnabled="{Binding CpmInactive}"
+                        Margin="50 0 0 0"
+                        Padding="4 4 7 4"
+                        materialDesign:TextFieldAssist.HasClearButton="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Cps, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='',Converter={StaticResource CpsConverter}}"
+                        PreviewTextInput="PreviewNumericInput"
+                        DataObject.Pasting="PastingNumericInput">
+
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Margin="0 0 5 0"
+                                    Kind="ClockTimeOneOutline" />
+                                <TextBlock
+                                    Text="{Binding CpsText}" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </TextBox>
+                </StackPanel>
             </StackPanel>
+
         </GroupBox>
         <!-- endregion CLICK INTERVAL -->
-        
+
         <!-- region BUTTONS -->
         <Grid DockPanel.Dock="Bottom" Margin="0 10 0 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
                 <RowDefinition Height="5" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -113,7 +178,7 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
+
             <Button Grid.Row="0" Grid.Column="0"
                     IsEnabled="{Binding IsNotRunning}"
                     Click="Start_Click"
@@ -123,7 +188,7 @@
                     materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding IsRunning}"
                     materialDesign:ButtonProgressAssist.Value="{Binding RepetitionsPercentageDone}"
                     Style="{StaticResource MaterialDesignRaisedButton}">
-            <StackPanel
+                <StackPanel
                     Orientation="Horizontal">
                     <materialDesign:PackIcon
                         Margin="0 0 4 0"
@@ -132,7 +197,7 @@
                         Text="START" />
                 </StackPanel>
             </Button>
-            
+
             <Button Grid.Row="0" Grid.Column="2"
                     IsEnabled="{Binding IsRunning}"
                     Click="Stop_Click"
@@ -148,10 +213,10 @@
                         Text="STOP" />
                 </StackPanel>
             </Button>
-            
+
         </Grid>
         <!-- endregion BUTTONS -->
-        
+
         <!-- region CLICK OPTIONS -->
         <Grid>
             <Grid.RowDefinitions>
@@ -159,9 +224,9 @@
                 <RowDefinition Height="0" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="6*" />
+                <ColumnDefinition Width="11*" />
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="9*" />
             </Grid.ColumnDefinitions>
 
             <GroupBox Grid.Row="0" Grid.Column="0"
@@ -200,7 +265,7 @@
                         Padding="4,4,7,4"
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding Repetitions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='', Converter={StaticResource ZeroToEmptyStringConverter}}"
+                        Text="{Binding Repetitions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, TargetNullValue='', Converter={StaticResource NumberToBlankConverter}}"
                         PreviewTextInput="PreviewNumericInput"
                         DataObject.Pasting="PastingNumericInput">
 
@@ -208,17 +273,18 @@
                             <StackPanel
                                 Orientation="Horizontal">
                                 <materialDesign:PackIcon
+                                    Margin="0 0 5 0"
                                     Kind="RepeatVariant" />
                                 <TextBlock
                                     Text="{Binding RepetitionText}" />
                             </StackPanel>
                         </materialDesign:HintAssist.Hint>
-                        
+
                     </TextBox>
                 </StackPanel>
             </GroupBox>
         </Grid>
         <!-- endregion CLICK OPTIONS -->
-        
+
     </DockPanel>
 </Window>
