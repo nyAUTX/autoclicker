@@ -12,8 +12,9 @@
         DataContext="{x:Static model:AutoclickerViewModel.Instance}"
         Style="{StaticResource MaterialDesignWindow}"
         Icon="../Resources/icon.ico"
+        ResizeMode="NoResize"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="Auto Clicker nyAUTX" Height="450" Width="575">
+        Title="Auto Clicker nyAUTX" Height="400" Width="575">
 
 
     <Window.Resources>
