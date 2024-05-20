@@ -22,4 +22,11 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\icon.ico" />
+    <Resource Include="Resources\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
 </Project>
