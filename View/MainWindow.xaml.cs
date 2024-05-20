@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using autoclicker.Model;
@@ -49,6 +50,11 @@ namespace autoclicker.View
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
+        {
+            AutoclickerViewModel.Instance.StopClicker();
+        }
+
+        private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             AutoclickerViewModel.Instance.StopClicker();
         }
