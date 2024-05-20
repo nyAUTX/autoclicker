@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows;
 using static autoclicker.Util.MouseOperations;
 
 namespace autoclicker.Model;
@@ -54,6 +55,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         {
             _milliseconds = value;
             NotifyPropertyChanged(nameof(Milliseconds));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
         }
     }
 
@@ -64,6 +66,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         {
             _seconds = value;
             NotifyPropertyChanged(nameof(Seconds));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
         }
     }
 
@@ -74,6 +77,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         {
             _minutes = value;
             NotifyPropertyChanged(nameof(Minutes));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
         }
     }
 
@@ -84,8 +88,11 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         {
             _hours = value;
             NotifyPropertyChanged(nameof(Hours));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
         }
     }
+    
+    public Visibility IntervalSafetyWarningVisibility => Milliseconds < 2 && Seconds == 0 && Minutes == 0 && Hours == 0 && CpmInactive && CpsInactive ? Visibility.Visible : Visibility.Collapsed;
 
     public int Cpm
     {
@@ -98,13 +105,17 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(CpmInactive));
             NotifyPropertyChanged(nameof(CpmText));
             NotifyPropertyChanged(nameof(IsIntervalEnabled));
+            NotifyPropertyChanged(nameof(HighCpmWarningVisibility));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
+            
         }
     }
 
     public bool CpmActive => _cpm != 0;
     public bool CpmInactive => !CpmActive;
     public string CpmText => CpmActive ? "CPM (120000 MAX)" : "SET CPM";
-
+    
+    public Visibility HighCpmWarningVisibility => Cpm > 42000 ? Visibility.Visible : Visibility.Collapsed;
 
     public int Cps
     {
@@ -117,6 +128,8 @@ public class AutoclickerViewModel : INotifyPropertyChanged
             NotifyPropertyChanged(nameof(CpsInactive));
             NotifyPropertyChanged(nameof(CpsText));
             NotifyPropertyChanged(nameof(IsIntervalEnabled));
+            NotifyPropertyChanged(nameof(HighCpsWarningVisibility));
+            NotifyPropertyChanged(nameof(IntervalSafetyWarningVisibility));
         }
     }
 
@@ -124,6 +137,8 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     public bool CpsInactive => !CpsActive;
 
     public string CpsText => CpsActive ? "CPS (2000 MAX)" : "SET CPS";
+    
+    public Visibility HighCpsWarningVisibility => Cps > 700 ? Visibility.Visible : Visibility.Collapsed;
 
     public bool IsIntervalEnabled => !(CpmActive || CpsActive);
 
@@ -203,7 +218,9 @@ public class AutoclickerViewModel : INotifyPropertyChanged
 
                     var remainingTime = sleepTime - elapsedTime;
 
-                    Thread.Sleep(remainingTime);
+                    
+                    if (remainingTime > TimeSpan.Zero)
+                        Thread.Sleep(remainingTime);
                 }
             else
                 while (!_cancellationTokenClicker.Token.IsCancellationRequested && RepetitionsDone < _repetitions)
@@ -219,7 +236,8 @@ public class AutoclickerViewModel : INotifyPropertyChanged
 
                     var remainingTime = sleepTime - elapsedTime;
 
-                    Thread.Sleep(remainingTime);
+                    if (remainingTime > TimeSpan.Zero)
+                        Thread.Sleep(remainingTime);
                 }
 
             IsRunning = false;

@@ -11,6 +11,7 @@
         mc:Ignorable="d"
         DataContext="{x:Static model:AutoclickerViewModel.Instance}"
         Style="{StaticResource MaterialDesignWindow}"
+        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         Title="MainWindow" Height="450" Width="575">
 
 
@@ -26,6 +27,8 @@
 
         <!-- region CLICK INTERVAL -->
         <GroupBox DockPanel.Dock="Top"
+                  IsEnabled="{Binding IsNotRunning}"
+                  Height="170"
                   Margin="0 0 0 10"
                   Style="{StaticResource MaterialDesignCardGroupBox}"
                   Header="CLICK INTERVAL">
@@ -161,6 +164,34 @@
                         </materialDesign:HintAssist.Hint>
                     </TextBox>
                 </StackPanel>
+                <!-- Warnings -->
+                <StackPanel Orientation="Horizontal" Margin="10" 
+                            Visibility="{Binding HighCpsWarningVisibility}">
+                    <materialDesign:PackIcon
+                        Margin="0 0 5 0"
+                        Kind="AlertCircleOutline" />
+                    <TextBlock
+                        FontSize="14"
+                        Text="HIGH CPS IS NOT RECOMMENDED / MAY NOT WORK" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" 
+                            Visibility="{Binding HighCpmWarningVisibility}">
+                    <materialDesign:PackIcon
+                        Margin="0 0 5 0"
+                        Kind="AlertCircleOutline" />
+                    <TextBlock
+                        FontSize="14"
+                        Text="HIGH CPM IS NOT RECOMMENDED / MAY NOT WORK" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10" 
+                            Visibility="{Binding IntervalSafetyWarningVisibility}" >
+                    <materialDesign:PackIcon
+                        Margin="0 0 5 0"
+                        Kind="AlertCircleOutline" />
+                    <TextBlock
+                        FontSize="14"
+                        Text="LOW INTERVAL IS NOT RECOMMENDED / MAY NOT WORK" />
+                </StackPanel>
             </StackPanel>
 
         </GroupBox>
@@ -218,7 +249,7 @@
         <!-- endregion BUTTONS -->
 
         <!-- region CLICK OPTIONS -->
-        <Grid>
+        <Grid IsEnabled="{Binding IsNotRunning}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="0" />
