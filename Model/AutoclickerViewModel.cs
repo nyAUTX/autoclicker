@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
+using autoclicker.Util;
 using static autoclicker.Util.MouseOperations;
 
 namespace autoclicker.Model;
@@ -14,7 +16,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     private bool _isRunning;
 
     // Interval 
-    private int _milliseconds = 10;
+    private int _milliseconds;
     private int _minutes;
 
     private int _repetitions;
@@ -23,6 +25,8 @@ public class AutoclickerViewModel : INotifyPropertyChanged
 
     private AutoclickerViewModel()
     {
+        SelectedMouseButton = MouseButton.Left;
+        Milliseconds = 10;
     }
 
     public static AutoclickerViewModel Instance { get; } = new();
@@ -46,7 +50,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
 
     #endregion
 
-    public MouseButtons SelectedMouseButton { get; set; }
+    public MouseButton SelectedMouseButton { get; set; }
 
     public int Milliseconds
     {

@@ -274,17 +274,17 @@
                         <RadioButton
                             Margin="4"
                             Content="LEFT"
-                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static utils:MouseOperations+MouseButtons.LEFT}}"
+                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static MouseButton.Left}}"
                             Style="{StaticResource MaterialDesignTabRadioButtonTop}" />
                         <RadioButton
                             Margin="4"
                             Content="MIDDLE"
-                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static utils:MouseOperations+MouseButtons.MIDDLE}}"
+                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static MouseButton.Middle}}"
                             Style="{StaticResource MaterialDesignTabRadioButtonTop}" />
                         <RadioButton
                             Margin="4"
                             Content="RIGHT"
-                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static utils:MouseOperations+MouseButtons.RIGHT}}"
+                            IsChecked="{Binding SelectedMouseButton, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static MouseButton.Right}}"
                             Style="{StaticResource MaterialDesignTabRadioButtonTop}" />
                     </StackPanel>
                 </StackPanel>

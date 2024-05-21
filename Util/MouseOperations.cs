@@ -1,16 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using System.Windows.Input;
 
 namespace autoclicker.Util;
 
 public class MouseOperations
 {
-    public enum MouseButtons
-    {
-        LEFT,
-        MIDDLE,
-        RIGHT
-    }
-    
     
     [Flags]
     public enum MouseEventFlags
@@ -25,22 +19,24 @@ public class MouseOperations
         RightUp = 0x00000010
     }
     
-    public static void PressMouseButton(MouseButtons button)
+    public static void PressMouseButton(MouseButton button)
     {
         switch (button)
         {
-            case MouseButtons.LEFT:
+            case MouseButton.Left:
                 MouseEvent(MouseEventFlags.LeftDown);
                 MouseEvent(MouseEventFlags.LeftUp);
                 break;
-            case MouseButtons.MIDDLE:
+            case MouseButton.Middle:
                 MouseEvent(MouseEventFlags.MiddleDown);
                 MouseEvent(MouseEventFlags.MiddleUp);
                 break;
-            case MouseButtons.RIGHT:
+            case MouseButton.Right:
                 MouseEvent(MouseEventFlags.RightDown);
                 MouseEvent(MouseEventFlags.RightUp);
                 break;
+            case MouseButton.XButton1:
+            case MouseButton.XButton2:
             default:
                 throw new ArgumentOutOfRangeException(nameof(button), button, null);
         }
