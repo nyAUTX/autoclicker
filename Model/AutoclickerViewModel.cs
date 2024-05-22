@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using autoclicker.Util;
+using NHotkey.Wpf;
 using static autoclicker.Util.MouseOperations;
 
 namespace autoclicker.Model;
@@ -27,6 +28,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     {
         SelectedMouseButton = MouseButton.Left;
         Milliseconds = 10;
+        HotkeyManager.Current.AddOrReplace("ToggleClicker", Key.F6, ModifierKeys.None, (sender, args) => ToggleClicker());
     }
 
     public static AutoclickerViewModel Instance { get; } = new();
@@ -254,6 +256,12 @@ public class AutoclickerViewModel : INotifyPropertyChanged
         _cancellationTokenClicker.Cancel();
         IsRunning = false;
         RepetitionsDone = 0;
+    }
+    
+    public void ToggleClicker()
+    {
+        if (IsRunning) StopClicker();
+        else StartClicker();
     }
 
     #endregion
