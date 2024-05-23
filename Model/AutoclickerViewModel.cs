@@ -9,6 +9,11 @@ namespace autoclicker.Model;
 
 public class AutoclickerViewModel : INotifyPropertyChanged
 {
+    
+    private const string TOGGLE_CLICKER = "ToggleClicker";
+    private Key _hotkey;
+    private ModifierKeys _modifierKey;
+    
     // Interval as clicks per unit of time
     private int _cpm;
     private int _cps;
@@ -28,7 +33,7 @@ public class AutoclickerViewModel : INotifyPropertyChanged
     {
         SelectedMouseButton = MouseButton.Left;
         Milliseconds = 10;
-        HotkeyManager.Current.AddOrReplace("ToggleClicker", Key.F6, ModifierKeys.None, (sender, args) => ToggleClicker());
+        HotkeyManager.Current.AddOrReplace(TOGGLE_CLICKER, _hotkey, _modifierKey, (sender, args) => ToggleClicker());
     }
 
     public static AutoclickerViewModel Instance { get; } = new();

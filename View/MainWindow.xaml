@@ -27,6 +27,42 @@
     </Window.Resources>
 
     <DockPanel Margin="10">
+        
+        <!-- region DIALOG -->
+        
+        <materialDesign:DialogHost
+            x:Name="DialogHost"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            CloseOnClickAway="True">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel
+                    Margin="16">
+                    <TextBlock
+                        Text="Change Hotkey" />
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                        <Button
+                            Margin="0,8,8,0"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                            Content="ACCEPT"
+                            IsDefault="True"
+                            Style="{StaticResource MaterialDesignFlatButton}">
+                        </Button>
+                        <Button
+                            Margin="0,8,8,0"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                            Content="CANCEL"
+                            IsCancel="True"
+                            Style="{StaticResource MaterialDesignFlatButton}">
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        
+        <!-- endregion DIALOG -->
 
         <!-- region CLICK INTERVAL -->
         <GroupBox DockPanel.Dock="Top"
